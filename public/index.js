@@ -1,69 +1,33 @@
 const button = document.querySelector('.todo-list-add-btn') ;
+const todoListItem = document.querySelector('.todo-list') ;
+const todoListInput = document.querySelector('.todo-list-input') ;
 
 button.addEventListener('click', (event) => {
     event.preventDefault();
     
-    const item = document.querySelector('.todo-list-input') ;
+    const item = document.querySelector('.todo-list-input').value ;
 
-    console.log(item) ;
-
-    // if (item) {
-    //     todoListItem.append("<li><div class='form-check'><label class='form-check-label'><input class='checkbox' type='checkbox' />" + item + "<i class='input-helper'></i></label></div><i class='remove mdi mdi-close-circle-outline'></i></li>");
-    //     todoListInput.val("");
-    // }
+    if (item) {
+        todoListItem.innerHTML += ("<li><div class='form-check'><label class='form-check-label'><input class='checkbox' type='checkbox' />" + item + "<i class='input-helper'></i></label></div><i class='remove mdi mdi-close-circle-outline'></i></li>");
+        todoListInput.value = "" ;
+    }
 }) ;
 
-const addItem = function(item) {
-    if (item.completed) {
-        todoListItem.append("<li class='completed'><div class='form-check'><label class='form-check-label'><input class='checkbox' type='checkbox' checked='checked' />" + item.name + "<i class='input-helper'></i></label></div><i class='remove mdi mdi-close-circle-outline'></i></li>");
-    } else {
-        todoListItem.append("<li><div class='form-check'><label class='form-check-label'><input class='checkbox' type='checkbox' />" + item.name + "<i class='input-helper'></i></label></div><i class='remove mdi mdi-close-circle-outline'></i></li>");
+todoListItem.addEventListener('change', (event) => {
+    if( event.target.checked !== undefined ) {
+        if( event.target.getAttribute('checked') === 'checked' ) {
+            event.target.removeAttribute('checked') ;
+            event.target.parentNode.className = event.target.parentNode.className.replace(' completed', '') ;
+        } else {
+            event.target.setAttribute('checked', 'checked') ;
+            event.target.parentNode.className += ' completed' ;
+        }
     }
-};
+    console.log(event.target) ;
+}) ;
 
-(function($) {
-    'use strict';
-    $(function() {
-        var todoListItem = $('.todo-list');
-        var todoListInput = $('.todo-list-input');
-        $('.todo-list-add-btn').on("click", function(event) {
-            event.preventDefault();
-    
-            var item = $(this).prevAll('.todo-list-input').val();
-    
-            if (item) {
-                todoListItem.append("<li><div class='form-check'><label class='form-check-label'><input class='checkbox' type='checkbox' />" + item + "<i class='input-helper'></i></label></div><i class='remove mdi mdi-close-circle-outline'></i></li>");
-                todoListInput.val("");
-            }
-        });
-    
-        var addItem = function(item) {
-            if (item.completed) {
-                todoListItem.append("<li class='completed'><div class='form-check'><label class='form-check-label'><input class='checkbox' type='checkbox' checked='checked' />" + item.name + "<i class='input-helper'></i></label></div><i class='remove mdi mdi-close-circle-outline'></i></li>");
-            } else {
-                todoListItem.append("<li><div class='form-check'><label class='form-check-label'><input class='checkbox' type='checkbox' />" + item.name + "<i class='input-helper'></i></label></div><i class='remove mdi mdi-close-circle-outline'></i></li>");
-            }
-        };
-    
-        $.get('/todos', function(items) {
-            items.forEach(e => {
-                addItem(e)
-            });
-        });
-    
-        todoListItem.on('change', '.checkbox', function() {
-            if ($(this).attr('checked')) {
-                $(this).removeAttr('checked');
-            } else {
-                $(this).attr('checked', 'checked');
-            }
-    
-            $(this).closest("li").toggleClass('completed');
-        });
-    
-        todoListItem.on('click', '.remove', function() {
-            $(this).parent().remove();
-        });
-    
-    });
-    })(jQuery);
+todoListItem.addEventListener('click', (event) => {
+    if( event.target.className.includes('remove') ) {
+        todoListItem.removeChild(event.target.parentNode) ;
+    }
+}) ;
