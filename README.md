@@ -1,6 +1,9 @@
 # Go Todo Project
 
 ## Test Tool
-```
-$ go install github.com/smartystreets/goconvey
-```
+
+https://github.com/smartystreets/goconvey
+
+## Live Reload Tool
+
+https://github.com/cosmtrek/air
