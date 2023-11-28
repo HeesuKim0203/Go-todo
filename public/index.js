@@ -7,27 +7,100 @@ button.addEventListener('click', (event) => {
     
     const item = document.querySelector('.todo-list-input').value ;
 
-    if (item) {
-        todoListItem.innerHTML += ("<li><div class='form-check'><label class='form-check-label'><input class='checkbox' type='checkbox' />" + item + "<i class='input-helper'></i></label></div><i class='remove mdi mdi-close-circle-outline'></i></li>");
+    if(item) {
+        const formdata = new FormData();
+        formdata.append("name", item);
+
+        fetch("/todos", {
+            method : 'POST',
+            redirect : 'follow',
+            body : formdata
+        })
+        .then(response => response.text())
+        .then(result => {
+            const todoData = JSON.parse(result) ;
+            addItem(todoData.name, todoData.completed, todoData.id) ;
+        }).catch(error => console.log('error', error)) ;
+
+        Array.prototype.forEach.call(document.getElementsByTagName('li'), (element) => {
+            if( !element.onclick ) {
+                element.onclick = todoListLiOnClickEvent ;
+            }
+        }) ;
+
         todoListInput.value = "" ;
     }
 }) ;
 
-todoListItem.addEventListener('change', (event) => {
-    if( event.target.checked !== undefined ) {
-        if( event.target.getAttribute('checked') === 'checked' ) {
-            event.target.removeAttribute('checked') ;
-            event.target.parentNode.className = event.target.parentNode.className.replace(' completed', '') ;
-        } else {
-            event.target.setAttribute('checked', 'checked') ;
-            event.target.parentNode.className += ' completed' ;
+function todoListLiOnClickEvent(event) {
+
+    const target = event.currentTarget ;
+    let complete = true ;
+
+    if( target.querySelector('input').checked ) complete = false ;
+
+    fetch(`/complete-todo/${target.id}?complete=${complete}`, {
+        method : 'GET',
+        redirect : 'follow',
+    })
+    .then(response => response.text())
+    .then(result => {
+        const { success } = JSON.parse(result) ;
+        if( success ) {
+            if( complete ) {
+                target.setAttribute('checked', 'checked') ;
+                target.className += 'completed' ;
+            }else {
+                target.removeAttribute('checked') ;
+                target.className = event.target.parentNode.className.replace('completed', '') ;
+            }
         }
-    }
-    console.log(event.target) ;
-}) ;
+    })
+    .catch(error => console.log('error', error)) ;
+}
 
 todoListItem.addEventListener('click', (event) => {
     if( event.target.className.includes('remove') ) {
-        todoListItem.removeChild(event.target.parentNode) ;
+        const id = event.target.parentNode.id ;
+
+        if( !id ) return ;
+
+        fetch(`/todos/${event.target.parentNode.id}`, {
+            method : 'DELETE',
+            redirect : 'follow',
+        })
+        .then(response => response.text())
+        .then(result => {
+            const { success } = JSON.parse(result) ;
+            if( success ) todoListItem.removeChild(event.target.parentNode) ;
+        })
+        .catch(error => console.log('error', error)) ;
     }
-}) ;
+}, true) ;
+
+function addItem(name, completed, id) {
+    todoListItem.innerHTML += `<li ${ completed ? "class = 'completed'" : ""} ${ id ? "id = " + id : ""}><div class='form-check'><label class='form-check-label'><input class='checkbox' type='checkbox' ${ completed ? "checked = 'checked'" : ""} />${ name }<i class='input-helper'></i></label></div><i class='remove mdi mdi-close-circle-outline'></i></li>` ;
+}
+
+(function init() {
+    fetch("/todos", {
+        method : 'GET',
+        redirect : 'follow'
+    })
+    .then(response => response.text())
+    .then(result => {
+        const todoListData = JSON.parse(result) ;
+        todoListData.forEach((todo) => {
+            if(todo) {
+                addItem(todo.name, todo.completed, todo.id) ;
+            }
+        }) ; 
+
+        Array.prototype.forEach.call(document.getElementsByTagName('li'), (element) => {
+            if( !element.onclick ) {
+                element.onclick = todoListLiOnClickEvent ;
+            }
+        })
+    })
+    .catch(error => console.log('error', error)) ;
+})() ;

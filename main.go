@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/goWeb/app"
@@ -13,6 +14,7 @@ func main() {
 
 	n.UseHandler(m)
 
+	log.Println("Started App")
 	err := http.ListenAndServe(":3001", n)
 
 	if err != nil {
