@@ -8,6 +8,10 @@ body {
     flex: 1 1 auto
 }
 
+.wrap {
+    margin : 0 auto ;
+}
+
 @media (max-width:991.98px) {
     .padding {
         padding: 1.5rem
@@ -58,7 +62,7 @@ body {
 }
 
 .card-body {
-    flex: 1 1 auto;
+    flex: 1 auto;
     padding: 1.25rem
 }
 
