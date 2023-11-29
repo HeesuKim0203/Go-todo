@@ -35,9 +35,10 @@ button.addEventListener('click', (event) => {
 function todoListLiOnClickEvent(event) {
 
     const target = event.currentTarget ;
+    const targetCheckElement = target.querySelector('input') ;
     let complete = true ;
 
-    if( target.querySelector('input').checked ) complete = false ;
+    if( targetCheckElement.checked ) complete = false ;
 
     fetch(`/complete-todo/${target.id}?complete=${complete}`, {
         method : 'GET',
@@ -48,11 +49,11 @@ function todoListLiOnClickEvent(event) {
         const { success } = JSON.parse(result) ;
         if( success ) {
             if( complete ) {
-                target.setAttribute('checked', 'checked') ;
+                targetCheckElement.setAttribute('checked', 'checked') ;
                 target.className += 'completed' ;
             }else {
-                target.removeAttribute('checked') ;
-                target.className = event.target.parentNode.className.replace('completed', '') ;
+                targetCheckElement.removeAttribute('checked') ;
+                target.className = target.className.replace('completed', '') ;
             }
         }
     })
@@ -83,7 +84,7 @@ function addItem(name, completed, id) {
 }
 
 (function init() {
-    fetch("/todos", {
+    fetch("http://localhost:3001/todos", {
         method : 'GET',
         redirect : 'follow'
     })
