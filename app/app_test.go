@@ -6,16 +6,22 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"strconv"
 	"testing"
 
+	"github.com/goWeb/model"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestTodos(t *testing.T) {
-	assert := assert.New(t)
-	ts := httptest.NewServer(MakeHandler())
+	os.Remove("./test.db")
 
+	assert := assert.New(t)
+	ah := MakeHandler()
+	ts := httptest.NewServer(ah)
+
+	defer ah.Close()
 	defer ts.Close()
 
 	const TESTNAME1 string = "Test todo1"
@@ -52,7 +58,7 @@ func TestTodos(t *testing.T) {
 
 func todoCreatedTest(assert *assert.Assertions, ts *httptest.Server, testName string) int {
 
-	var todo Todo
+	var todo model.Todo
 
 	// Todo Create Test
 	resp, err := http.PostForm(ts.URL+"/todos", url.Values{"name": {testName}})
@@ -67,14 +73,14 @@ func todoCreatedTest(assert *assert.Assertions, ts *httptest.Server, testName st
 	return id1
 }
 
-func todoGetTodoListTest(assert *assert.Assertions, ts *httptest.Server, testListLen int) []*Todo {
+func todoGetTodoListTest(assert *assert.Assertions, ts *httptest.Server, testListLen int) []*model.Todo {
 
 	// Todo Get Test
 	resp, err := http.Get(ts.URL + "/todos")
 	assert.NoError(err)
 	assert.Equal(http.StatusOK, resp.StatusCode)
 	// TodoList Len Test
-	todos := []*Todo{}
+	todos := []*model.Todo{}
 	err = json.NewDecoder(resp.Body).Decode(&todos)
 	assert.NoError(err)
 	assert.Equal(len(todos), testListLen)
