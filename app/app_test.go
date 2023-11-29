@@ -98,7 +98,7 @@ func todoCompeleteUpdateTest(assert *assert.Assertions, ts *httptest.Server, tes
 func todoDeleteTest(assert *assert.Assertions, ts *httptest.Server, testId int) {
 
 	// Todo Delete Test
-	req, _ := http.NewRequest("DELETE", ts.URL+"/todos"+strconv.Itoa(testId), nil)
+	req, _ := http.NewRequest("DELETE", ts.URL+"/todos/"+strconv.Itoa(testId), nil)
 
 	resp, err := http.DefaultClient.Do(req)
 	assert.NoError(err)
