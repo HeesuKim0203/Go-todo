@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/goWeb/model"
+	"github.com/Go-todo/model"
 	"github.com/gorilla/mux"
 	"github.com/unrolled/render"
 )

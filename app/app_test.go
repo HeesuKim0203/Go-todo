@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/goWeb/model"
+	"github.com/Go-todo/model"
 	"github.com/stretchr/testify/assert"
 )
 
